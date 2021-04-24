@@ -19,6 +19,7 @@
 
 #include "addon/addon_manager.hpp"
 
+#include <algorithm>
 #include <sstream>
 #include <physfs.h>
 
