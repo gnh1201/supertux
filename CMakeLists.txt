@@ -892,7 +892,11 @@ target_compile_definitions(supertux2_lib PUBLIC -DGLM_ENABLE_EXPERIMENTAL)
 
 if(WIN32)
   add_executable(supertux2 WIN32 src/main.cpp ${CMAKE_CURRENT_SOURCE_DIR}/data/images/engine/icons/supertux.rc)
-  target_link_libraries(supertux2 ${SDL2MAIN_LIBRARIES})
+  if(VCPKG_BUILD)
+    target_link_libraries(supertux2 PRIVATE SDL2::SDL2main)
+  else()
+    target_link_libraries(supertux2 PRIVATE ${SDL2MAIN_LIBRARIES})
+    endif()
 else()
   add_executable(supertux2 src/main.cpp)
 endif(WIN32)
@@ -926,7 +930,7 @@ endif()
 
 if (NOT EMSCRIPTEN)
   if(VCPKG_BUILD)
-    target_link_libraries(supertux2_lib PRIVATE SDL2::SDL2main SDL2::SDL2 SDL2_image)
+    target_link_libraries(supertux2_lib PUBLIC SDL2::SDL2main SDL2::SDL2 SDL2::SDL2_image)
   else()
     target_include_directories(supertux2_lib SYSTEM PUBLIC
       ${SDL2_INCLUDE_DIRS}
@@ -957,6 +961,7 @@ target_link_libraries(supertux2_lib PUBLIC tinygettext_lib)
 target_link_libraries(supertux2_lib PUBLIC wstsound)
 target_link_libraries(supertux2_lib PUBLIC sexp)
 target_link_libraries(supertux2_lib PUBLIC savepng)
+
 if(ENABLE_DISCORD)
 target_link_libraries(supertux2_lib PUBLIC discord-rpc)
 endif(ENABLE_DISCORD)
@@ -965,7 +970,9 @@ if(EMSCRIPTEN)
   link_libraries(-lopenal)
 endif()
 
+target_link_libraries(supertux2_lib PUBLIC glm::glm)
 target_link_libraries(supertux2_lib PUBLIC fmt::fmt)
+
 if(USE_SYSTEM_PHYSFS)
   target_link_libraries(supertux2_lib PUBLIC ${PHYSFS_LIBRARY})
 else()
@@ -1007,7 +1014,7 @@ if(BUILD_TESTS)
   file(GLOB TEST_SUPERTUX_SOURCES tests/*.cpp)
   add_executable(test_supertux2 ${TEST_SUPERTUX_SOURCES})
   target_compile_options(test_supertux2 PRIVATE ${WARNINGS_CXX_FLAGS})
-  target_link_libraries(test_supertux2
+  target_link_libraries(test_supertux2 PRIVATE
     GTest::GTest GTest::Main
     supertux2_lib
     ${CMAKE_THREAD_LIBS_INIT})
