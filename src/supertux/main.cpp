@@ -209,7 +209,7 @@ void PhysfsSubsystem::find_datadir() const
     {
       datadir = BUILD_DATA_DIR;
       // Add config dir for supplemental files
-      PHYSFS_mount(std::filesystem::canonical(BUILD_CONFIG_DATA_DIR).string().c_str(), nullptr, 1);
+      PHYSFS_mount(std::filesystem::canonical(BUILD_CONFIG_DATA_DIR).c_str(), nullptr, 1);
     }
     else
     {
@@ -220,7 +220,7 @@ void PhysfsSubsystem::find_datadir() const
     }
   }
 
-  if (!PHYSFS_mount(std::filesystem::canonical(datadir).string().c_str(), nullptr, 1))
+  if (!PHYSFS_mount(std::filesystem::canonical(datadir).c_str(), nullptr, 1))
   {
     log_warning << "Couldn't add '" << datadir << "' to physfs searchpath: " << PHYSFS_getLastErrorCode() << std::endl;
   }
@@ -275,7 +275,7 @@ if (FileSystem::is_directory(olduserdir)) {
   for (std::filesystem::directory_iterator itr(olduserpath); itr != end_itr; ++itr) {
   try
   {
-    std::filesystem::rename(itr->path().string().c_str(), userpath / itr->path().filename());
+    std::filesystem::rename(itr->path(), userpath / itr->path().filename());
   }
   catch (const std::filesystem::filesystem_error& err)
   {
